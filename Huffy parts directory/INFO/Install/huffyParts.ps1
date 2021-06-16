@@ -8,12 +8,15 @@ $outputPath = "$huffyPartsDirectory\output\output.txt"
 function addTotal($data) {
     $dataArray = @()
     foreach ($item in $data) {
-        if ($item[0] -eq "$") {
-            $dataArray += , -join $item[1..($item.Length - 1)]
+        try {
+            if ($item[0] -eq "$") {
+                $dataArray += , -join $item[1..($item.Length - 1)]
+            }
+            else {
+                $dataArray += , $item
+            }
         }
-        else {
-            $dataArray += , $item
-        }
+        catch { }
     }
     $sum = $dataArray | ForEach-Object -begin { $sum = 0 }-process { $sum += $_ } -end { $sum }
     return $sum
@@ -32,9 +35,9 @@ function returnInput {
     [int]$firstRow = 2
 
     # grab tariff, qty, cost data
-    $tariffs = $sheet.UsedRange.Rows.Columns[1].Value2 | where {$_ -notmatch "Hts Numbers"}
-    $qty = $sheet.UsedRange.Rows.Columns[3].Value2 | where {$_ -notmatch "Qty"}
-    $cost = $sheet.UsedRange.Rows.Columns[5].Value2 | where {$_ -notmatch "Cost"}
+    $tariffs = $sheet.UsedRange.Rows.Columns[1].Value2 | where { $_ -notmatch "Hts Numbers" }
+    $qty = $sheet.UsedRange.Rows.Columns[3].Value2 | where { $_ -notmatch "Qty" }
+    $cost = $sheet.UsedRange.Rows.Columns[5].Value2 | where { $_ -notmatch "Cost" }
 
     # Close excel and return data
     $book.close($true)
